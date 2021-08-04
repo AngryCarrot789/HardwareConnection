@@ -16,5 +16,8 @@ namespace HardwareConnection.Packets {
         public override void Write(TextWriter writer) {
             writer.Write(this.Text);
         }
+
+        // e
+
     }
 }
