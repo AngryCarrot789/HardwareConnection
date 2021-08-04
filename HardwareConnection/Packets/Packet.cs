@@ -24,7 +24,18 @@ namespace HardwareConnection.Packets {
         static Packet() {
             PacketCreators = new Func<int, string, Packet>[1000];
             RegisterCreator(0, (meta, data) => new Packet0Text(meta, data));
+            // doesn't need to be registered because it's not a receivable packet, only sendable
+            // software tells hardware to digitalWrite, not the other way around ;)
+            // RegisterCreator(1, (meta, data) => new Packet1DigitalWrite(meta, data == "t"));
         }
+
+        /// <summary>
+        /// The ID of this packet
+        /// <para>
+        /// Must NOT be below 0, or above 999 (1000 possibly IDs)
+        /// </para>
+        /// </summary>
+        public abstract int ID { get; }
 
         /// <summary>
         /// Extra data for this packet (that is sent after the ID)
@@ -32,7 +43,7 @@ namespace HardwareConnection.Packets {
         /// This cannot be below 0 or above 99 (100 possible metadata values)
         /// </para>
         /// </summary>
-        public int MetaData { get; }
+        public int MetaData { get; set; }
 
         /// <summary>
         /// Creates a packet (with the optional metadata)
@@ -89,6 +100,40 @@ namespace HardwareConnection.Packets {
             }
 
             throw new InvalidDataException($"The value ({stringId}) was not parsable as the packet's ID");
+        }
+
+        public static void WritePacket(TextWriter writer, Packet packet) {
+            int id = packet.ID;
+            if (id < 0 || id > 999) {
+                throw new InvalidDataException("ID was not between 0 and 999! " + id);
+            }
+
+            int meta = packet.MetaData;
+            if (meta < 0 || meta > 99) {
+                throw new InvalidDataException("MetaData was not between 0 and 999! " + id);
+            }
+
+            if (id < 10) {
+                writer.Write("00");
+                writer.Write(id);
+            }
+            else if (id < 100) {
+                writer.Write("0");
+                writer.Write(id);
+            }
+            else {
+                writer.Write(id);
+            }
+
+            if (meta < 10) {
+                writer.Write("0");
+                writer.Write(meta);
+            }
+            else {
+                writer.Write(meta);
+            }
+
+            packet.Write(writer);
         }
     }
 }

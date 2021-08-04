@@ -13,6 +13,8 @@ namespace HardwareConnection.Serial {
 
         public SerialPort Port { get; }
 
+        private StringWriter PacketWriteBuffer;
+
         public bool CanReceive {
             get => _canReceive;
             set => _canReceive = value;
@@ -32,6 +34,7 @@ namespace HardwareConnection.Serial {
                 Name = "REghZy Serial Reader"
             };
 
+            this.PacketWriteBuffer = new StringWriter(new StringBuilder(256));
             this.ReceiverThread.Start();
         }
 
@@ -63,6 +66,13 @@ namespace HardwareConnection.Serial {
             Write(new StringBuilder().Append(c).Append('\n').ToString());
         }
 
+        public void SendPacket(Packet packet) {
+            Packet.WritePacket(PacketWriteBuffer, packet);
+            PacketWriteBuffer.Flush();
+            WriteLine(PacketWriteBuffer.ToString());
+            PacketWriteBuffer.GetStringBuilder().Clear();
+        }
+
         private void ReceiveMain() {
             StringBuilder buffer = new StringBuilder(128);
             SerialPort port = this.Port;
@@ -90,10 +100,6 @@ namespace HardwareConnection.Serial {
 
                 Thread.Sleep(5);
             }
-        }
-
-        public void SendPacket(Packet packet) {
-
         }
     }
 }

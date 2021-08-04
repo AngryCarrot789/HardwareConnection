@@ -13,11 +13,10 @@ namespace HardwareConnection.Packets {
             this.Text = text;
         }
 
+        public override int ID => 0;
+
         public override void Write(TextWriter writer) {
             writer.Write(this.Text);
         }
-
-        // e
-
     }
 }
