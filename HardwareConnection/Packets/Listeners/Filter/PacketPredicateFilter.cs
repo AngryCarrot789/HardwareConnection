@@ -1,12 +1,15 @@
 using System;
-using HardwareConnection.Exceptions;
 using HardwareConnection.Packets.Packets;
 
-namespace HardwareConnection.Packets.Filter {
+namespace HardwareConnection.Packets.Listeners.Filter {
     public class PacketPredicateFilter : PacketFilter {
         public Predicate<Packet> Predicate { get; }
 
         public PacketPredicateFilter(Predicate<Packet> predicate) {
+            if (predicate == null) {
+                throw new NullReferenceException("Predicate cannot be null");
+            }
+
             this.Predicate = predicate;
         }
 

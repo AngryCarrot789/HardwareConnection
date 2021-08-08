@@ -1,18 +1,12 @@
 using System.IO;
 
-namespace HardwareConnection.Packets {
+namespace HardwareConnection.Packets.Packets {
     public class Packet1DigitalWrite : Packet {
         public override int ID => 1;
 
-        public int Pin {
-            get => this.MetaData;
-            set => this.MetaData = value;
-        }
-
         public bool State { get; }
 
-        public Packet1DigitalWrite(int pin, bool state) {
-            this.Pin = pin;
+        public Packet1DigitalWrite(int pin, bool state) : base(pin) {
             this.State = state;
         }
 

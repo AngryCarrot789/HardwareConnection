@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace HardwareConnection.Packets {
+namespace HardwareConnection.Packets.Packets {
     /// <summary>
     /// A simply demo packet, which contains text. See the base packet class on how it is registered
     /// </summary>

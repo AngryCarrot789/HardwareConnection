@@ -1,17 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using HardwareConnection.Connections;
 using HardwareConnection.Packets.Packets;
 using HardwareConnection.Serial;
 
 namespace HardwareConnection.Packets {
+    /// <summary>
+    /// A threaded spooler for packets
+    /// </summary>
     public class PacketSpooler {
         private static int SpoolersCount;
 
         private readonly Thread WriteThread;
         private readonly Stack<Packet> Queue;
         private readonly IConnection _connection;
-
         private bool CanThreadRun;
 
         public IConnection Connection => _connection;
@@ -25,17 +28,14 @@ namespace HardwareConnection.Packets {
             this.WriteThread.Start();
         }
 
+        [MTAThread]
         private void WriteMain() {
             while (CanThreadRun) {
-                if (CanWrite()) {
-                    WriteNextPacket();
-                }
-
+                WriteNextPacket();
                 Thread.Sleep(1);
             }
         }
 
-        [MTAThread]
         public void QueuePacket(Packet packet) {
             lock (this.Queue) {
                 this.Queue.Push(packet);
@@ -44,8 +44,10 @@ namespace HardwareConnection.Packets {
 
         [STAThread]
         public void WriteNextPacket() {
-            lock (this.Queue) {
-                this._connection.SendPacket(this.Queue.Pop());
+            if (CanWrite()) {
+                lock (this.Queue) {
+                    this._connection.SendPacket(this.Queue.Pop());
+                }
             }
         }
 

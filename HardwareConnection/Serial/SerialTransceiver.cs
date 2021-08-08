@@ -5,7 +5,7 @@ using System.Threading;
 using HardwareConnection.Packets;
 
 namespace HardwareConnection.Serial {
-    public class SerialConnection {
+    public class SerialTransceiver {
         private Thread ReceiverThread;
         private volatile bool _canReceive;
         private volatile bool CanThreadRun;
@@ -17,10 +17,10 @@ namespace HardwareConnection.Serial {
             set => _canReceive = value;
         }
 
-        public delegate void LineReceivedEventArgs(SerialConnection connection, string line);
-        public event LineReceivedEventArgs OnLineReceived;
+        public delegate void LineReceivedEventArgs(SerialTransceiver transceiver, string line);
+        public event LineReceivedEventArgs LineReceived;
 
-        public SerialConnection(string port, int baudRate = 9600, Parity parity = Parity.None, int dataBits = 8, StopBits stopBits = StopBits.One, Handshake handshake = Handshake.None) {
+        public SerialTransceiver(string port, int baudRate = 9600, Parity parity = Parity.None, int dataBits = 8, StopBits stopBits = StopBits.One, Handshake handshake = Handshake.None) {
             this.Port = new SerialPort(port, baudRate, parity, dataBits, stopBits);
             if (handshake != Handshake.None) {
                 this.Port.Handshake = handshake;
@@ -73,8 +73,8 @@ namespace HardwareConnection.Serial {
                             continue;
 
                         if (read == '\n') {
-                            if (OnLineReceived != null) {
-                                OnLineReceived(this, buffer.ToString());
+                            if (LineReceived != null) {
+                                LineReceived(this, buffer.ToString());
                             }
 
                             buffer.Clear();

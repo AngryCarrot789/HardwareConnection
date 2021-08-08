@@ -1,6 +1,6 @@
 using HardwareConnection.Packets.Packets;
 
-namespace HardwareConnection.Packets.Filter {
+namespace HardwareConnection.Packets.Listeners.Filter {
     /// <summary>
     /// Used for checking if a packet is accepted
     /// </summary>

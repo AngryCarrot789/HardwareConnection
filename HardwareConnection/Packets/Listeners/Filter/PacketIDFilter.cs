@@ -1,6 +1,6 @@
 using HardwareConnection.Packets.Packets;
 
-namespace HardwareConnection.Packets.Filter {
+namespace HardwareConnection.Packets.Listeners.Filter {
     public class PacketIDFilter : PacketFilter {
         public int AcceptedID { get; }
 
