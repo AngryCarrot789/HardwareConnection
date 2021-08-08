@@ -1,19 +1,16 @@
 using System;
-using System.IO;
 using System.IO.Ports;
 using System.Text;
 using System.Threading;
 using HardwareConnection.Packets;
 
 namespace HardwareConnection.Serial {
-    public class SerialConnection : IConnection {
+    public class SerialConnection {
         private Thread ReceiverThread;
         private volatile bool _canReceive;
         private volatile bool CanThreadRun;
 
         public SerialPort Port { get; }
-
-        private StringWriter PacketWriteBuffer;
 
         public bool CanReceive {
             get => _canReceive;
@@ -34,7 +31,6 @@ namespace HardwareConnection.Serial {
                 Name = "REghZy Serial Reader"
             };
 
-            this.PacketWriteBuffer = new StringWriter(new StringBuilder(256));
             this.ReceiverThread.Start();
         }
 
@@ -64,13 +60,6 @@ namespace HardwareConnection.Serial {
 
         public void WriteLine(String c) {
             Write(new StringBuilder().Append(c).Append('\n').ToString());
-        }
-
-        public void SendPacket(Packet packet) {
-            Packet.WritePacket(PacketWriteBuffer, packet);
-            PacketWriteBuffer.Flush();
-            WriteLine(PacketWriteBuffer.ToString());
-            PacketWriteBuffer.GetStringBuilder().Clear();
         }
 
         private void ReceiveMain() {
